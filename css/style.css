@@ -6,6 +6,14 @@
   box-sizing: border-box;
 }
 
+h5 {
+    font-size: 1.1rem !important;
+}
+
+
+.space-price {
+    margin: 5px
+}
 html {
   font-family: "Muli", sans-serif;
   font-size: 16px;
@@ -56,6 +64,11 @@ html {
     color: white;
     padding: 5px;
     margin-top: 10px;
+
+}
+
+.shrink-card {
+    height: 263px;
 }
 
 .btn-purple {
@@ -69,6 +82,21 @@ html {
 
 .clicked {
     background-color: #fcb045;
+}
+
+.right-answer {
+    background-color: #A8FF8F;
+}
+
+.timer {
+    font-size: 10px;
+    background-color: #fcb045;
+    padding: 2px;
+    text-align: right;
+    margin-bottom: 0px;
+    padding-right: 8px;
+    font-style: italic;
+    color: white;
 }
 
 ul {

@@ -1,8 +1,8 @@
 
 // VARIABLES
-//localStorage.clear();
+// localStorage.clear();
 const surname = localStorage.getItem('surname')
-const scorebook = localStorage.getItem('score-book')
+
 const logged = document.querySelector("#logged")
 const happyEmojy = document.querySelector(".happy-emojy")
 const sadEmojy = document.querySelector(".sad-emojy")
@@ -21,6 +21,9 @@ const inputSurname = document.querySelector("#surname")
 const secondNavbar = document.querySelector("#average-score-navbar")
 let total = []
 let score = 0
+let beginQuizzTime = ""
+let endQuizzTime = ""
+let price = []
 
 // LOGIN
 function welcome() {
@@ -61,23 +64,93 @@ function displayAllScores() {
       total.push(Number(localStorage.getItem(card.classList[1])))
     } else {
       const colorfulBtn = document.createElement("span")
-      colorfulBtn.innerHTML = "PLAY"
+      colorfulBtn.innerHTML = "PLAY ▶️"
       colorfulBtn.style.color = "#fcb045"
       const magicButton = setInterval(function(){
         colorfulBtn.classList.toggle("colorful")
-      }, 1000);
+      }, 2000);
       space.append(colorfulBtn)
     }
-    
-  
-  
+
     card.addEventListener("click", (event) => redirectCategory(event))
    
   })
   return total
 }
 
+function displayAllTimers() {
+  cardCategory.forEach((card) => {
+    let categoryName = card.className.split(" ")[1]
+    let timerRegistered = localStorage.getItem(`timer-${categoryName}`)
+    if(timerRegistered) {
+      const timerCard = document.createElement("p")
+      timerCard.classList.add('timer')
+      timerCard.innerHTML = `⏰ Test completed in ${timerRegistered} `
+      card.append(timerCard) 
+    } else {
+      card.classList.add('shrink-card')
+    }
+  
+  })
+}
 
+
+
+function setPriceByScore() {
+  cardCategory.forEach((card) => {
+    let categoryName = card.className.split(" ")[1]
+    let timer = localStorage.getItem(`timer-${categoryName}`)
+    let score = localStorage.getItem(categoryName)
+    
+    if(score) {
+      if((score > 5) && (timer.split(" ").includes("min")))  {
+        price.push(`queen ${categoryName}`)
+      } else if ((score > 5) && !timer.split(" ").includes("min")) {
+        price.push(`master ${categoryName}`)
+      }
+
+    }
+  })
+  return price
+}
+
+
+function displayPrice() {
+  let navbar = document.querySelector("#average-score-navbar .container-fluid")
+  if(price.length === 0) {
+    let div = document.createElement("div")
+    div.innerHTML = "Play and earn some prices !!"
+    div.style.color = "rgb(252, 176, 69)"
+    navbar.append(div)
+  } else {
+    displayWinnerPrice(navbar, price)
+
+  }
+
+  
+}
+
+function displayWinnerPrice(navbar, price) {
+
+  let div = document.createElement("div")
+  div.innerHTML = `You have ${price.length} price(s): `
+  div.style.color = "rgb(252, 176, 69)"
+  price.forEach((card) => {
+    let span = document.createElement("span")
+    if(card.split(" ").includes("queen")) {
+      span.innerHTML = "🏆 |"
+      
+    } else {
+      span.innerHTML = "🚀 |"
+    }
+    span.title = card.split(" ")[1]
+    span.classList.add("space-price")
+    div.append(span)
+    navbar.append(div)
+ 
+  })
+
+}
 
 
 
@@ -88,7 +161,7 @@ function calculateTotal(total) {
     if(card.classList.contains("hidden") ) {
       const totalScore = reducer === 0 ? 0 : (reducer/total.length).toFixed(2)
 
-      categoryName.innerHTML = `Your average score: ${totalScore}`
+      categoryName.innerHTML = `Your average score: ${totalScore} ✓`
       categoryName.parentElement.classList.add("second-title")
     }
   })
@@ -174,15 +247,26 @@ function displayScore(score) {
 }
 
 
+function rightAnswer(allChildren, rightAnswer) {
+  let allAnswers= [...allChildren]
+  allAnswers.forEach((answer) => {
+    if(answer.textContent === rightAnswer) answer.classList.add("right-answer")
+    
+  })
+}
+
 function choseAnswers(button, answer, categoryChosen) {
+  console.log(answer)
   button.addEventListener("click", (event) => {
+    rightAnswer(event.target.parentElement.children, answer)
+    
     emojy.classList.add('hidden')
     if(event.target.textContent === answer) {
       score++
       happyEmojy.classList.remove("hidden")
       happyAudio.play()
       sadEmojy.classList.add("hidden")
-      
+
     }else {
       happyEmojy.classList.add("hidden")
       sadAudio.play()
@@ -198,12 +282,35 @@ function choseAnswers(button, answer, categoryChosen) {
 
 
 function displayCardAnimation(event, score) {
+  let category = event.target.parentElement.parentElement.parentElement.id
   event.target.classList.add("clicked")
   setTimeout(() => event.target.parentElement.parentElement.remove(), 500);
   if(event.target.parentElement.parentElement.nextSibling) {
     setTimeout(() => event.target.parentElement.parentElement.nextSibling.classList.remove('hidden'), 499)
   } else {
+    endQuizzTime = Date.now()
     displayScore(score)
+    
+    displayTime(category)
+  }
+
+}
+function displayTime(category) {
+  let newContent = document.createElement("p");
+  newContent.innerHTML = "⌚️ You have completed this test in" + " " + calculateTime()
+  textScore.appendChild(newContent)
+  localStorage.setItem(`timer-${category}`, calculateTime())
+
+}
+
+function calculateTime() {
+  let timer = Math.floor((endQuizzTime - beginQuizzTime) / 1000)
+  if(timer > 60) {
+    let min = Math.floor((timer % 3600) / 60)
+    let second = timer % 60
+    return second > 0 ? `${min} min ${second} sec` : `${min} min`
+  } else {
+    return `${timer} secondes`
   }
 
 }
@@ -226,7 +333,10 @@ function createCard(allAnsweredShuffled, result, categoryChosen) {
   })
     categoryChosen.appendChild(card);
     categoryChosen.children[0].classList.add('active')
+    
     emojy.classList.remove("hidden")
+
+    
 }
 
 
@@ -241,7 +351,11 @@ function displayQuestions(result, categoryChosen) {
   createCard(allAnsweredShuffled, result, categoryChosen)
   displayCard(categoryChosen) 
 
+
+
 }
+
+
 
 function displayCard(categoryChosen) {
   let children = [ ...categoryChosen.children ];  
@@ -249,29 +363,40 @@ function displayCard(categoryChosen) {
 
     if(!child.classList.contains('active')){
       child.classList.add("hidden")
+    } else if ((child.classList.contains('last')) && (child.classList.contains('active'))){
+      endQuizzTime = Date.now()
+      
     }
   })
 }
 
+
+
 function displayCategoryName(category) {
+
   switch (category.id) {
     case 'general':
       categoryName.innerHTML = "General Knowledge"
       break;
     case 'book':
       categoryName.innerHTML = "Books"
+ 
       break;
     case 'movie':
       categoryName.innerHTML = "Movies"
+ 
       break;
     case 'general':
       categoryName.innerHTML = "Mathematics"
+
       break;
     case 'mythologie':
       categoryName.innerHTML = "Mythology"
+   
       break;
     case 'nature':
       categoryName.innerHTML = "Nature"
+    
       break;
     
   }
@@ -288,6 +413,7 @@ function getAxios(url, category) {
     let results = response.data.results;
     let categoryChosen = document.querySelector(`#${category}`)
 
+    beginQuizzTime = Date.now()
     results.forEach((result) => {
       displayQuestions(result, categoryChosen)
     })
@@ -296,3 +422,6 @@ function getAxios(url, category) {
 
 welcome()
 calculateTotal(displayAllScores())
+displayAllTimers()
+setPriceByScore()
+displayPrice()

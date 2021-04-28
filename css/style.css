@@ -1,0 +1,101 @@
+@import url("https://fonts.googleapis.com/css?family=Muli:300,400,600,700,900");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: "Muli", sans-serif;
+  font-size: 16px;
+  font-weight: 100;
+}
+
+.purple {
+    color: #833ab4
+}
+
+.red {
+    color: #fd1d1d
+}
+
+.orange {
+    #fcb045
+}
+
+.title {
+    padding: 20px;
+}
+
+
+.hidden {
+    display: none !important;
+}
+
+.card-category {
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    margin: 20px;
+    padding: 8px;
+
+}
+
+.image-category {
+    height: 200px;
+    width: 247px;
+}
+
+.pointer-events-none {
+    pointer-events: none;
+
+}
+
+.card-category h5 {
+    background-color: #fd1d1d;
+    color: white;
+    padding: 5px;
+    margin-top: 10px;
+}
+
+.btn-purple {
+    color: white !important;
+    background-color: #833ab4 !important;
+}
+
+.logo {
+    width: 50px;
+}
+
+.clicked {
+    background-color: #fcb045;
+}
+
+ul {
+    list-style-type: none;
+}
+
+li {
+    padding: 3px;
+    border-bottom: 1px solid #fcb045;
+}
+
+a {
+    color: black !important;
+    text-decoration: none !important;
+    padding: 5px !important;
+    margin: 5px !important;
+    font-size: 22px !important;
+}
+
+.second-title {
+    background-color: purple;
+    color: white;
+    padding: 10px;
+    margin-bottom: 50px;
+    font-weight: 500;
+}
+
+.colorful {
+    color: red !important
+}

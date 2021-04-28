@@ -1,6 +1,6 @@
 
 // VARIABLES
-// localStorage.clear();
+//localStorage.clear();
 const surname = localStorage.getItem('surname')
 
 const logged = document.querySelector("#logged")
@@ -19,6 +19,8 @@ const choseCategory = document.querySelector("#choseCategory")
 const buttonGetSurname = document.querySelector("#get-surname")
 const inputSurname = document.querySelector("#surname")
 const secondNavbar = document.querySelector("#average-score-navbar")
+const gameExplanation = document.querySelector("#game-explanation")
+const banner = document.querySelector('.banner')
 let total = []
 let score = 0
 let beginQuizzTime = ""
@@ -32,13 +34,19 @@ function welcome() {
     const welcome = `Welcome ${surname} 🤓`
     appendSurname.append(welcome)
     secondNavbar.classList.remove("hidden")
+    banner.classList.add("hidden")
+    gameExplanation.style.visibility='visible'
+
   } else {
     choseCategory.classList.add("hidden")
+    gameExplanation.style.visibility='hidden'
+    
   }
 
 }
 
 function loginQuizz() {
+  banner.classList.add("hidden")
   localStorage.setItem('surname', inputSurname.value);
   choseCategory.classList.remove("hidden")
   secondNavbar.classList.remove('hidden')
@@ -160,8 +168,8 @@ function calculateTotal(total) {
   btnCategory.forEach((card) => {
     if(card.classList.contains("hidden") ) {
       const totalScore = reducer === 0 ? 0 : (reducer/total.length).toFixed(2)
-
-      categoryName.innerHTML = `Your average score: ${totalScore} ✓`
+      const emojiScore = totalScore > 5 ? "🤙" : "👎"
+      categoryName.innerHTML = `Your average score: ${totalScore} ${emojiScore}`
       categoryName.parentElement.classList.add("second-title")
     }
   })

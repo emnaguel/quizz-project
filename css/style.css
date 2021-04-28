@@ -24,6 +24,10 @@ html {
     color: #833ab4
 }
 
+.white {
+    color: white
+}
+
 .red {
     color: #fd1d1d
 }
@@ -126,4 +130,44 @@ a {
 
 .colorful {
     color: red !important
+}
+
+#game-explanation {
+    margin-top: -8px;
+    color: white;
+    padding: 15px;
+    font-weight: 600;
+    align-items: center;
+   
+}
+
+.w-80 {
+    width: 80%;
+}
+
+#average-score-navbar {
+
+    padding-top: 0  !important;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+
+}
+
+
+
+.banner {
+    background-size: cover;
+    background-position: center;
+    padding: 150px 0;
+    margin-top: -200px;
+    height: 100vh;
+}
+
+.btn-category {
+    margin-bottom: 40px;
 }

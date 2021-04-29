@@ -1,6 +1,6 @@
 
 // VARIABLES
-localStorage.clear();
+//localStorage.clear();
 const surname = localStorage.getItem('surname')
 
 const logged = document.querySelector("#logged")

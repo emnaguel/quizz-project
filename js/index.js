@@ -1,6 +1,6 @@
 
 // VARIABLES
-//localStorage.clear();
+localStorage.clear();
 const surname = localStorage.getItem('surname')
 
 const logged = document.querySelector("#logged")
@@ -11,6 +11,9 @@ const textScore = document.querySelector(".text-score")
 const categoryName = document.querySelector("#category")
 const happyAudio = new Audio('./audios/happy.wav');
 const sadAudio = new Audio('./audios/sad.wav');
+const sadFinal = new Audio('./audios/sad-final.wav');
+const happyFinal = new Audio('./audios/applause.wav');
+const veryHappyFinal = new Audio('./audios/fanfare.wav');
 const btnCategory = document.querySelectorAll(".btn-category")
 const cardCategory = document.querySelectorAll(".card-category")
 const login = document.querySelector("#login")
@@ -26,6 +29,8 @@ let score = 0
 let beginQuizzTime = ""
 let endQuizzTime = ""
 let price = []
+let finalTimer = 0
+let finalScore = 0
 
 // LOGIN
 function welcome() {
@@ -47,6 +52,7 @@ function welcome() {
 
 function loginQuizz() {
   banner.classList.add("hidden")
+  gameExplanation.style.visibility='visible'
   localStorage.setItem('surname', inputSurname.value);
   choseCategory.classList.remove("hidden")
   secondNavbar.classList.remove('hidden')
@@ -59,121 +65,7 @@ function loginQuizz() {
 
 buttonGetSurname.onclick = loginQuizz
 
-// SCORE
 
-
-
-function displayAllScores() {
-  cardCategory.forEach((card) => {
-    const space = card.querySelector('h5')
-    if(localStorage.getItem(card.classList[1]) !==null) {
-      const scoreTitle = `${localStorage.getItem(card.classList[1])}/10`
-      space.append(scoreTitle)
-      total.push(Number(localStorage.getItem(card.classList[1])))
-    } else {
-      const colorfulBtn = document.createElement("span")
-      colorfulBtn.innerHTML = "PLAY ▶️"
-      colorfulBtn.style.color = "#fcb045"
-      const magicButton = setInterval(function(){
-        colorfulBtn.classList.toggle("colorful")
-      }, 2000);
-      space.append(colorfulBtn)
-    }
-
-    card.addEventListener("click", (event) => redirectCategory(event))
-   
-  })
-  return total
-}
-
-function displayAllTimers() {
-  cardCategory.forEach((card) => {
-    let categoryName = card.className.split(" ")[1]
-    let timerRegistered = localStorage.getItem(`timer-${categoryName}`)
-    if(timerRegistered) {
-      const timerCard = document.createElement("p")
-      timerCard.classList.add('timer')
-      timerCard.innerHTML = `⏰ Test completed in ${timerRegistered} `
-      card.append(timerCard) 
-    } else {
-      card.classList.add('shrink-card')
-    }
-  
-  })
-}
-
-
-
-function setPriceByScore() {
-  cardCategory.forEach((card) => {
-    let categoryName = card.className.split(" ")[1]
-    let timer = localStorage.getItem(`timer-${categoryName}`)
-    let score = localStorage.getItem(categoryName)
-    
-    if(score) {
-      if((score > 5) && (timer.split(" ").includes("min")))  {
-        price.push(`queen ${categoryName}`)
-      } else if ((score > 5) && !timer.split(" ").includes("min")) {
-        price.push(`master ${categoryName}`)
-      }
-
-    }
-  })
-  return price
-}
-
-
-function displayPrice() {
-  let navbar = document.querySelector("#average-score-navbar .container-fluid")
-  if(price.length === 0) {
-    let div = document.createElement("div")
-    div.innerHTML = "Play and earn some prices !!"
-    div.style.color = "rgb(252, 176, 69)"
-    navbar.append(div)
-  } else {
-    displayWinnerPrice(navbar, price)
-
-  }
-
-  
-}
-
-function displayWinnerPrice(navbar, price) {
-
-  let div = document.createElement("div")
-  div.innerHTML = `You have ${price.length} price(s): `
-  div.style.color = "rgb(252, 176, 69)"
-  price.forEach((card) => {
-    let span = document.createElement("span")
-    if(card.split(" ").includes("queen")) {
-      span.innerHTML = "🏆 |"
-      
-    } else {
-      span.innerHTML = "🚀 |"
-    }
-    span.title = card.split(" ")[1]
-    span.classList.add("space-price")
-    div.append(span)
-    navbar.append(div)
- 
-  })
-
-}
-
-
-
-function calculateTotal(total) {
- 
-  const reducer = total.reduce((a, b)=> a + b,0);
-  btnCategory.forEach((card) => {
-    if(card.classList.contains("hidden") ) {
-      const totalScore = reducer === 0 ? 0 : (reducer/total.length).toFixed(2)
-      const emojiScore = totalScore > 5 ? "🤙" : "👎"
-      categoryName.innerHTML = `Your average score: ${totalScore} ${emojiScore}`
-      categoryName.parentElement.classList.add("second-title")
-    }
-  })
-}
 
 // REDIRECT TO QUIZZ CATEGORY
 
@@ -232,7 +124,9 @@ function shuffle(array) {
   return array;
 }
 
+
 // QUIZZ LOGIC
+
 function displayScore(score) {
   if(score > 5) {
     happyEmojy.classList.remove("hidden")
@@ -240,18 +134,20 @@ function displayScore(score) {
     const bravo = document.createElement("a")
     bravo.href = "/"
     bravo.classList.add("text-center")
-    bravo.innerHTML = `Bravo your score is: ${score}! Chose another test`
+    bravo.innerHTML = `Bravo your score is: <span id="final-score">${score}</span>! Chose another test`
     textScore.append(bravo)
+    
   } else {
     happyEmojy.classList.add("hidden")
     sadEmojy.classList.remove("hidden")
     const sorry = document.createElement("a")
     sorry.href="/"
     sorry.classList.add("text-center")
-    sorry.innerHTML = `Sorry your score is: ${score}, do it again!`
+    sorry.innerHTML = `Sorry your score is: <span id="final-score">${score}</span>, do it again!`
     textScore.append(sorry)
 
   }
+  finalScore = score
 }
 
 
@@ -298,17 +194,39 @@ function displayCardAnimation(event, score) {
   } else {
     endQuizzTime = Date.now()
     displayScore(score)
-    
     displayTime(category)
+    displayPriceInEndOfQuizz()
   }
 
 }
+
+function displayPriceInEndOfQuizz() {
+    let p = document.createElement("p")
+    let content = ""
+    if(finalScore > 5 && finalTimer.includes('min')) {
+      content = "You have won this price 🏆!!"
+      happyFinal.play()
+    } else if(finalScore > 5 && !finalTimer.includes('min')) {
+      content = "You have won this price 🚀 !"
+      veryHappyFinal.play()
+    } else {
+      content = "You haven't won anything 🤷🏻‍♀️, play again to earn some prices"
+      sadFinal.play()
+    }
+    p.innerHTML = content
+    p.classList.add("bigger")
+    textScore.appendChild(p)
+}
+
+
+
+
 function displayTime(category) {
   let newContent = document.createElement("p");
-  newContent.innerHTML = "⌚️ You have completed this test in" + " " + calculateTime()
+  newContent.innerHTML = `⌚️ You have completed this test in ${calculateTime()}`
   textScore.appendChild(newContent)
   localStorage.setItem(`timer-${category}`, calculateTime())
-
+  finalTimer = calculateTime()
 }
 
 function calculateTime() {
@@ -425,6 +343,127 @@ function getAxios(url, category) {
     results.forEach((result) => {
       displayQuestions(result, categoryChosen)
     })
+  })
+}
+
+
+
+// PRICE
+function setPriceByScore() {
+  cardCategory.forEach((card) => {
+    let categoryName = card.className.split(" ")[1]
+    let timer = localStorage.getItem(`timer-${categoryName}`)
+    let score = localStorage.getItem(categoryName)
+    
+    if(score && timer) {
+      
+      if((score > 5) && (timer.split(" ").includes("min")))  {
+        price.push(`queen ${categoryName}`)
+      } else if ((score > 5) && !timer.split(" ").includes("min")) {
+        price.push(`master ${categoryName}`)
+      }
+
+    }
+  })
+  return price
+}
+
+
+function displayPrice() {
+  let navbar = document.querySelector("#average-score-navbar .container-fluid")
+  if(price.length === 0) {
+    let div = document.createElement("div")
+    div.innerHTML = "Play and earn some prices !!"
+    div.style.color = "rgb(252, 176, 69)"
+    div.classList.add("price-container")
+    navbar.append(div)
+  } else {
+    displayWinnerPrice(navbar, price)
+
+  }
+
+  
+}
+
+function displayWinnerPrice(navbar, price) {
+
+  let div = document.createElement("div")
+
+  div.style.color = "rgb(252, 176, 69)"
+  price.forEach((card) => {
+    let span = document.createElement("span")
+    if(card.split(" ").includes("queen")) {
+      span.innerHTML = "🏆 "
+      
+    } else {
+      span.innerHTML = "🚀 "
+    }
+    span.title = card.split(" ")[1]
+    span.classList.add("space-price")
+    div.classList.add('price-container')
+    div.append(span)
+    navbar.append(div)
+ 
+  })
+
+}
+
+// SCORE
+
+
+
+function displayAllScores() {
+  cardCategory.forEach((card) => {
+    const space = card.querySelector('h5')
+    if(localStorage.getItem(card.classList[1]) !==null) {
+      const scoreTitle = `${localStorage.getItem(card.classList[1])}/10`
+      space.append(scoreTitle)
+      total.push(Number(localStorage.getItem(card.classList[1])))
+    } else {
+      const colorfulBtn = document.createElement("span")
+      colorfulBtn.innerHTML = "PLAY ▶️"
+      colorfulBtn.style.color = "#fcb045"
+      const magicButton = setInterval(function(){
+        colorfulBtn.classList.toggle("colorful")
+      }, 2000);
+      space.append(colorfulBtn)
+    }
+
+    card.addEventListener("click", (event) => redirectCategory(event))
+   
+  })
+  return total
+}
+
+function displayAllTimers() {
+  cardCategory.forEach((card) => {
+    let categoryName = card.className.split(" ")[1]
+    let timerRegistered = localStorage.getItem(`timer-${categoryName}`)
+    if(timerRegistered) {
+      const timerCard = document.createElement("p")
+      timerCard.classList.add('timer')
+      timerCard.innerHTML = `⏰ Test completed in ${timerRegistered} `
+      card.append(timerCard) 
+    } else {
+      card.classList.add('shrink-card')
+    }
+  
+  })
+}
+
+
+
+
+function calculateTotal(total) {
+ 
+  const reducer = total.reduce((a, b)=> a + b,0);
+  btnCategory.forEach((card) => {
+    if(card.classList.contains("hidden") ) {
+      const totalScore = reducer === 0 ? 0 : (reducer/total.length).toFixed(2)
+      const emojiScore = totalScore > 5 ? "🤙" : "👎"
+      categoryName.innerHTML = `Average score: ${totalScore} ${emojiScore}`
+      categoryName.parentElement.classList.add("second-title")
+    }
   })
 }
 

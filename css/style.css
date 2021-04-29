@@ -12,7 +12,15 @@ h5 {
 
 
 .space-price {
-    margin: 5px
+    margin: 5px;
+    font-size: xx-large;
+    padding: 10px;
+}
+
+.price-container {
+    margin-top: 5px;
+    padding: 10px;
+
 }
 html {
   font-family: "Muli", sans-serif;
@@ -33,7 +41,7 @@ html {
 }
 
 .orange {
-    #fcb045
+   color: #fcb045
 }
 
 .title {
@@ -126,6 +134,8 @@ a {
     padding: 10px;
     margin-bottom: 50px;
     font-weight: 500;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
 }
 
 .colorful {
@@ -155,6 +165,9 @@ a {
     justify-content: space-between;
     padding-top: .5rem;
     padding-bottom: .5rem;
+    position: fixed;
+    right: 0;
+    top: 10%;
 
 }
 
@@ -164,10 +177,28 @@ a {
     background-size: cover;
     background-position: center;
     padding: 150px 0;
-    margin-top: -200px;
+    margin-top: -240px;
     height: 100vh;
 }
 
 .btn-category {
     margin-bottom: 40px;
+}
+
+.bigger {
+
+    font-size: xx-large;
+}
+
+#category {
+    padding: 9px;
+    border-bottom: 1px solid;
+}
+
+.space-right {
+    margin-right: 48px
+}
+
+.text-score {
+    margin-top: 50px;
 }

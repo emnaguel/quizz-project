@@ -202,3 +202,11 @@ a {
 .text-score {
     margin-top: 50px;
 }
+
+.bold{
+    font-weight: 700;
+}
+
+.thin {
+    font-weight: 200;
+}

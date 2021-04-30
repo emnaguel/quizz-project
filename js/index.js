@@ -1,6 +1,6 @@
 
 // VARIABLES
-//localStorage.clear();
+localStorage.clear();
 const surname = localStorage.getItem('surname')
 
 const logged = document.querySelector("#logged")
@@ -196,26 +196,32 @@ function displayCardAnimation(event, score) {
     displayScore(score)
     displayTime(category)
     displayPriceInEndOfQuizz()
+
   }
 
 }
 
 function displayPriceInEndOfQuizz() {
+    let containerPrice = document.querySelector('.price-container')
     let p = document.createElement("p")
     let content = ""
     if(finalScore > 5 && finalTimer.includes('min')) {
       content = "You have won this price 🏆!!"
+      containerPrice.innerHTML = "🏆"
       happyFinal.play()
     } else if(finalScore > 5 && !finalTimer.includes('min')) {
       content = "You have won this price 🚀 !"
+      containerPrice.innerHTML = "🚀"
       veryHappyFinal.play()
     } else {
       content = "You haven't won anything 🤷🏻‍♀️, play again to earn some prices"
+      containerPrice.innerHTML = "🤷🏻‍♀️ Play again to earn some prices"
       sadFinal.play()
     }
     p.innerHTML = content
     p.classList.add("bigger")
     textScore.appendChild(p)
+
 }
 
 
